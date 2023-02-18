@@ -12,6 +12,7 @@ export class FormComponent implements OnInit {
 
  cliente:Cliente;
   titulo='Crear cliente';
+  errores :String[];
   constructor(private clienteService:ClienteService,private router:Router,private activatedRoute:ActivatedRoute){
     this.cliente=new Cliente();
 
@@ -25,6 +26,9 @@ export class FormComponent implements OnInit {
         console.log(response)
         this.router.navigate(['/clientes'])
         swal.fire('Nuevo cliente',` El cliente ${response.cliente.nombre} ha sido creado`,'success')
+      },err=>{
+        this.errores=err.error.errores as String[];
+       // console.log('eee ',this.errores)
       }
     )
   }
@@ -47,6 +51,9 @@ export class FormComponent implements OnInit {
       (cliente)=>{
         this.router.navigate(['/clientes'])
         swal.fire('Actualizar cliente',` El cliente ${cliente.nombre} ha sido actualizado`,'success')
+    },err=>{
+      this.errores=err.error.errores as String[];
+      console.log('eee ',this.errores)
     })
   }
 }

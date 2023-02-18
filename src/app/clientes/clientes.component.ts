@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Cliente } from './cliente';
 import { ClienteService } from './cliente.service';
 import swal from 'sweetalert2';
+import { tap } from 'rxjs';
 
 
 @Component({
@@ -18,9 +19,16 @@ export class ClientesComponent {
   }
 
   ngOnInit(): void {
-   this.clienteService.getClientes().subscribe(
-    clientes=>this.clientes=clientes
-   );
+    let pagina=0;
+    this.clienteService.getClientesPag(pagina).pipe(
+      tap(
+        (response:any)=> this.clientes=response.content as Cliente[])
+    ).subscribe();
+   /*this.clienteService.getClientes().pipe(
+    tap(clientes=>{
+       this.clientes=clientes
+    })
+   ).subscribe();*/
   }
 
   eliminar (cliente:Cliente):void{
