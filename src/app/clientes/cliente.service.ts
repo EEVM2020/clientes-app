@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {formatDate} from '@angular/common'
 import { Cliente } from './cliente';
+import { Region } from './region';
 import { Observable, of, catchError, throwError } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { HttpClient, HttpHeaders,HttpRequest,HttpEvent } from '@angular/common/http'
 import { map } from 'rxjs/operators'
 import swal from 'sweetalert2';
 import { Router } from '@angular/router'
@@ -17,6 +18,10 @@ export class ClienteService {
   private httHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(private http: HttpClient, private router: Router) { }
+
+  listarRegiones(): Observable<Region[]>{
+    return this.http.get<Region[]>(this.urlServicio+'/regiones')
+  }
 
   getClientes(): Observable<Cliente[]> {
     return this.http.get(this.urlServicio).pipe(
@@ -92,4 +97,30 @@ export class ClienteService {
       })
     )
   }
+
+  subirFoto(archivo:File,id):Observable<HttpEvent<{}>>{
+    let formData=new FormData();
+    formData.append("archivo",archivo);
+    formData.append("id",id);
+
+    const req=new HttpRequest('POST',`${this.urlServicio}/cargue`,formData,{
+      reportProgress:true
+    })
+
+    return this.http.request(req);
+
+    /*return this.http.post(`${this.urlServicio}/cargue`,formData).pipe(
+      map((respuesta:any)=>{
+        return respuesta.cliente as Cliente;
+      }),
+      catchError((e)=>{
+        console.log(e.error)
+        swal.fire('Error subir imagen ', e.error.mensaje, 'error')
+        return throwError(e);
+      })
+    )*/
+
+  }
+
+
 }
